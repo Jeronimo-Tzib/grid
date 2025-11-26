@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black background for favicon -->
+  <rect width="200" height="200" fill="#1e1e1e"/>
+  
+  <!-- Shield/Outline -->
+  <path d="M100 20 L140 40 L140 120 L100 160 L60 120 L60 40 Z" stroke="#fcfaff" stroke-width="8" fill="none"/>
+  
+  <!-- Owl Head -->
+  <!-- Eyes -->
+  <circle cx="85" cy="70" r="12" fill="#fcfaff"/>
+  <circle cx="115" cy="70" r="12" fill="#fcfaff"/>
+  <circle cx="88" cy="70" r="4" fill="#1e1e1e"/>
+  <circle cx="118" cy="70" r="4" fill="#1e1e1e"/>
+  
+  <!-- Brow/Horns -->
+  <path d="M75 55 L85 60 L100 55" stroke="#fcfaff" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M100 55 L115 60 L125 55" stroke="#fcfaff" stroke-width="5" stroke-linecap="round" fill="none"/>
+  
+  <!-- Beak -->
+  <path d="M100 85 L95 95 L105 95 Z" fill="#fcfaff"/>
+  
+  <!-- GRID Text (smaller for favicon) -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#fcfaff" text-anchor="middle" letter-spacing="1">GRID</text>
+</svg>
+

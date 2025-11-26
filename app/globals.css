@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Geist", "Geist Fallback";
+  --font-mono: "Geist Mono", "Geist Mono Fallback";
+
+  /* GRID Color Palette */
+  /* Orange: #ea5c2a, Dark Grey: #1e1e1e, Light Grey: #fcfaff */
+  --color-background: #fcfaff;
+  --color-foreground: #1e1e1e;
+  --color-card: #fcfaff;
+  --color-card-foreground: #1e1e1e;
+  --color-popover: #fcfaff;
+  --color-popover-foreground: #1e1e1e;
+  --color-primary: #ea5c2a;
+  --color-primary-foreground: #fcfaff;
+  --color-secondary: #fcfaff;
+  --color-secondary-foreground: #1e1e1e;
+  --color-muted: #fcfaff;
+  --color-muted-foreground: #1e1e1e;
+  --color-accent: #ea5c2a;
+  --color-accent-foreground: #fcfaff;
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: #fcfaff;
+  --color-border: oklch(0.922 0 0);
+  --color-input: oklch(0.922 0 0);
+  --color-ring: #ea5c2a;
+  --color-chart-1: #ea5c2a;
+  --color-chart-2: oklch(0.6 0.118 184.704);
+  --color-chart-3: oklch(0.398 0.07 227.392);
+  --color-chart-4: oklch(0.828 0.189 84.429);
+  --color-chart-5: oklch(0.769 0.188 70.08);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --color-sidebar: #1e1e1e;
+  --color-sidebar-foreground: #fcfaff;
+  --color-sidebar-primary: #ea5c2a;
+  --color-sidebar-primary-foreground: #fcfaff;
+  --color-sidebar-accent: #ea5c2a;
+  --color-sidebar-accent-foreground: #fcfaff;
+  --color-sidebar-border: oklch(0.3 0 0);
+  --color-sidebar-ring: #ea5c2a;
+}
+
+/* Dark mode overrides using standard CSS custom properties */
+.dark {
+  --color-background: #1e1e1e;
+  --color-foreground: #fcfaff;
+  --color-card: #1e1e1e;
+  --color-card-foreground: #fcfaff;
+  --color-popover: #1e1e1e;
+  --color-popover-foreground: #fcfaff;
+  --color-primary: #ea5c2a;
+  --color-primary-foreground: #fcfaff;
+  --color-secondary: #1e1e1e;
+  --color-secondary-foreground: #fcfaff;
+  --color-muted: oklch(0.269 0 0);
+  --color-muted-foreground: #fcfaff;
+  --color-accent: #ea5c2a;
+  --color-accent-foreground: #fcfaff;
+  --color-destructive: oklch(0.396 0.141 25.723);
+  --color-destructive-foreground: #fcfaff;
+  --color-border: oklch(0.269 0 0);
+  --color-input: oklch(0.269 0 0);
+  --color-ring: #ea5c2a;
+  --color-chart-1: #ea5c2a;
+  --color-chart-2: oklch(0.696 0.17 162.48);
+  --color-chart-3: oklch(0.769 0.188 70.08);
+  --color-chart-4: oklch(0.627 0.265 303.9);
+  --color-chart-5: oklch(0.645 0.246 16.439);
+  --color-sidebar: #1e1e1e;
+  --color-sidebar-foreground: #fcfaff;
+  --color-sidebar-primary: #ea5c2a;
+  --color-sidebar-primary-foreground: #fcfaff;
+  --color-sidebar-accent: #ea5c2a;
+  --color-sidebar-accent-foreground: #fcfaff;
+  --color-sidebar-border: oklch(0.269 0 0);
+  --color-sidebar-ring: #ea5c2a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

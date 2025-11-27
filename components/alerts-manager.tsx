@@ -32,65 +32,40 @@ export function AlertsManager({ alerts: initialAlerts, userRole }: AlertsManager
   const { toast } = useToast()
 
   useEffect(() => {
-    // Check notification permission
-    if ("Notification" in window) {
-      setNotificationsEnabled(Notification.permission === "granted")
-    }
+  // Check notification permission
+  if ("Notification" in window) {
+    setNotificationsEnabled(Notification.permission === "granted");
+  }
 
-    // Subscribe to real-time alert updates
-    const channel = supabase
-      .channel("alerts-updates")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "alerts" }, async (payload) => {
-        const newAlert = payload.new as Alert
+  // Subscribe to real-time alert updates
+  const channel = supabase
+    .channel("alerts-updates")
+    .on("postgres_changes", { 
+      event: "INSERT", 
+      schema: "public", 
+      table: "alerts" 
+    }, async (payload) => {
+      const newAlert = payload.new as Alert;
+      // ... rest of your INSERT handler ...
+    })
+    .on("postgres_changes", { 
+      event: "UPDATE", 
+      schema: "public", 
+      table: "alerts" 
+    }, (payload) => {
+      // Only update if this update changes the is_active status
+      if (payload.new.is_active === false) {
+        setAlerts(prev => prev.map(alert => 
+          alert.id === payload.new.id ? { ...alert, is_active: false } : alert
+        ));
+      }
+    })
+    .subscribe();
 
-        // Fetch incident details if available
-        if (newAlert.incident_id) {
-          const { data: incident } = await supabase
-            .from("incidents")
-            .select("*")
-            .eq("id", newAlert.incident_id)
-            .single()
-
-          const alertWithIncident: AlertWithIncident = {
-            ...newAlert,
-            incidents: incident
-              ? {
-                  title: incident.title,
-                  category: incident.category,
-                  latitude: incident.latitude,
-                  longitude: incident.longitude,
-                }
-              : null,
-          }
-
-          setAlerts((prev) => [alertWithIncident, ...prev])
-
-          // Show browser notification if enabled
-          if (notificationsEnabled && newAlert.is_active) {
-            new Notification("New Safety Alert", {
-              body: newAlert.message,
-              icon: "/favicon.ico",
-            })
-          }
-
-          // Show toast notification
-          toast({
-            title: "New Safety Alert",
-            description: newAlert.title,
-            variant: newAlert.severity >= 4 ? "destructive" : "default",
-          })
-        }
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "alerts" }, (payload) => {
-        const updatedAlert = payload.new as Alert
-        setAlerts((prev) => prev.map((alert) => (alert.id === updatedAlert.id ? { ...alert, ...updatedAlert } : alert)))
-      })
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [supabase, notificationsEnabled, toast])
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [supabase, notificationsEnabled, toast]);
 
   const requestNotificationPermission = async () => {
     if ("Notification" in window) {
@@ -105,31 +80,62 @@ export function AlertsManager({ alerts: initialAlerts, userRole }: AlertsManager
     }
   }
 
-  const handleDismissAlert = async (alertId: string) => {
-    if (userRole !== "leader" && userRole !== "officer" && userRole !== "admin") {
-      toast({
-        title: "Permission Denied",
-        description: "Only leaders and officers can dismiss alerts",
-        variant: "destructive",
-      })
-      return
-    }
+const handleDismissAlert = async (alertId: string) => {
+  console.log('Dismissing alert:', alertId, 'User role:', userRole);
+  
+  if (userRole !== "leader" && userRole !== "officer" && userRole !== "admin") {
+    console.log('Permission denied - insufficient role');
+    toast({
+      title: "Permission Denied",
+      description: "Only leaders and officers can dismiss alerts",
+      variant: "destructive",
+    });
+    return;
+  }
 
-    const { error } = await supabase.from("alerts").update({ is_active: false }).eq("id", alertId)
+  try {
+    console.log('Updating alert in database...');
+    
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Update only the fields that exist in your schema
+    const { data, error } = await supabase
+      .from("alerts")
+      .update({ 
+        is_active: false,
+        updated_by: user?.id || null
+      })
+      .eq("id", alertId)
+      .select();
+
+    console.log('Update result:', { data, error });
 
     if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to dismiss alert",
-        variant: "destructive",
-      })
-    } else {
-      toast({
-        title: "Alert Dismissed",
-        description: "The alert has been marked as inactive",
-      })
+      console.error('Error updating alert:', error);
+      throw error;
     }
+
+    // Update local state optimistically
+    setAlerts(prevAlerts => 
+      prevAlerts.map(alert => 
+        alert.id === alertId ? { ...alert, is_active: false } : alert
+      )
+    );
+    
+    toast({
+      title: "Alert Dismissed",
+      description: "The alert has been marked as inactive",
+    });
+  } catch (error) {
+    console.error('Error in handleDismissAlert:', error);
+    toast({
+      title: "Error",
+      description: error instanceof Error ? error.message : "Failed to dismiss alert",
+      variant: "destructive",
+    });
   }
+};
 
   const handleMemberFeedback = (alertId: string) => {
     toast({
